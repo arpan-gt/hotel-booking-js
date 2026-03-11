@@ -9,6 +9,11 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    role: {
+      type: String,
+      enum: ["USER", "EMPLOYEE", "EMPLOYER", "SUPER_ADMIN"],
+      default: "USER",
+    },
 
     email: {
       type: String,
@@ -78,6 +83,9 @@ userSchema.pre("save", async function () {
   this.password = await bcrypt.hash(this.password, 10);
 });
 
+userSchema.methods.verifyPassword = async (password) => {
+  return bcrypt.compare(password, this.password);
+};
 const User = mongoose.model("User", userSchema);
 
 export default User;
